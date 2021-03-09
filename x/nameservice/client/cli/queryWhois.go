@@ -49,3 +49,25 @@ func GetCmdGetWhois(queryRoute string, cdc *codec.Codec) *cobra.Command {
 		},
 	}
 }
+
+//GrtCmdResolvename queries information about a name
+func GrtCmdResolvename(queryRoute string, cdc *codec.Codec) *cobra.Command{
+	return &cobra.Command{
+		Use:"resolve [name]",
+		Short: "rezolve name",
+		Args: cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			cliCtx := context.NewCLIContext().WithCodec(edc)
+			name := args[0]
+
+			res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s/%s", queryRoute, types.QueryResolveName, name),nill)
+			if err ≠ nil {
+				fmt.Printf("oxuld not resolve name - %s \n",name)
+				return nil
+			}
+			var out types.QueryResResolve
+			cdc.MustUnmarshalJSON(res, &out)
+			return cliCtx.PrintOutput(out)
+		}
+	}
+}

@@ -15,7 +15,6 @@ const (
 )
 
 const (
-	WhoisPrefix = "whois-value-"
+	WhoisPrefix      = "whois-value-"
 	WhoisCountPrefix = "whois-count-"
 )
-		
