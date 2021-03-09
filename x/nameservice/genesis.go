@@ -1,32 +1,41 @@
-package nameservice
+package types
 
-import (
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/user/nameservice/x/nameservice/keeper"
-	"github.com/user/nameservice/x/nameservice/types"
-	// abci "github.com/tendermint/tendermint/abci/types"
-)
+import "fmt"
 
-// InitGenesis initialize default parameters
-// and the keeper's address to pubkey map
-func InitGenesis(ctx sdk.Context, k keeper.Keeper , data types.GenesisState) {
-	// TODO: Define logic for when you would like to initalize a new genesis
-	for _, record := range data.WhoisRecord{
-		keeper.SetWhois(ctx, record.Value,record)
+// GenesisState - all nameservice state that must be provided at genesis
+type GenesisState struct {
+	// TODO: Fill out what is needed by the module for genesis
+	WhoisRecords []Whois `json:"whois_records"`
+}
+
+// NewGenesisState creates a new GenesisState object
+func NewGenesisState( /* TODO: Fill out with what is needed for genesis state */ ) GenesisState {
+	return GenesisState{
+		// TODO: Fill out according to your genesis state
+		WhoisRecords: nil,
 	}
 }
 
-// ExportGenesis writes the current store values
-// to a genesis file, which can be imported again
-// with InitGenesis
-func ExportGenesis(ctx sdk.Context, k keeper.Keeper) types.GenesisState {
-	// TODO: Define logic for exporting state
-	var record []types.whois
-	iterator := k.GetNameIterator(ctx)
-	for ; iterator.Valid(); iterator.Next(){
-		name := string(iterator.key())
-		whois, _ := k.GetWhois(ctx,name)
-		record = append(record,whois)
+// DefaultGenesisState - default GenesisState used by Cosmos Hub
+func DefaultGenesisState() GenesisState {
+	return GenesisState{
+		WhoisRecords: []Whois{},
 	}
-	return types.GenesisState{WhoisRecords: records}
+}
+
+// ValidateGenesis validates the nameservice genesis parameters
+func ValidateGenesis(data GenesisState) error {
+	// TODO: Create a sanity check to make sure the state conforms to the modules needs
+	for _, record := range data.WhoisRecords {
+		if record.Creator == nil {
+			return fmt.Errorf("invalid WhoisRecord: Creator: %s. Error: Missing Creator", record.Creator)
+		}
+		if record.Value == "" {
+			return fmt.Errorf("invalid WhoisRecord: Value: %s. Error: Missing Value", record.Value)
+		}
+		if record.Price == nil {
+			return fmt.Errorf("invalid WhoisRecord: Price: %s. Error: Missing Price", record.Price)
+		}
+	}
+	return nil
 }
