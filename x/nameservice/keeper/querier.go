@@ -1,7 +1,7 @@
 package keeper
 
 import (
-  // this line is used by starport scaffolding # 1
+	// this line is used by starport scaffolding # 1
 	"github.com/user/nameservice/x/nameservice/types"
 
 	abci "github.com/tendermint/tendermint/abci/types"
@@ -14,9 +14,10 @@ import (
 func NewQuerier(k Keeper) sdk.Querier {
 	return func(ctx sdk.Context, path []string, req abci.RequestQuery) ([]byte, error) {
 		switch path[0] {
-    // this line is used by starport scaffolding # 2
-		case types.QueryResName:
-			return resolveName(ctx,path[1:],k)
+		// this line is used by starport scaffolding # 2
+
+		case types.QueryResolveName:
+			return resolveName(ctx, path[1:], k)
 		case types.QueryListWhois:
 			return listWhois(ctx, k)
 		case types.QueryGetWhois:
