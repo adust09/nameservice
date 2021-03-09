@@ -1,3 +1,4 @@
+//It is what handles interaction with the data store, has references to other keepers for cross-module interactions, and contains most of the core functionality of a module.
 package keeper
 
 import (
