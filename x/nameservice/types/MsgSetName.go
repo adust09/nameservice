@@ -2,45 +2,49 @@ package types
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-var _ sdk.Msg = &MsgSetWhois{}
+const RouterKey = ModuleName // this was defined in your key.go file
 
-type MsgSetWhois struct {
-  Owner sdk.AccAddress `json:"owner" yaml:"owner"`
-  Value string `json:"value" yaml:"value"`
-  Price string `json:"price" yaml:"price"`
+type NewMsgSetName struct {
+  Name string `json:"name"`
+  Value string `json:"value"`
+  Owner sdk.AccAddress `json:"owner"`
 }
 
-func NewMsgSetWhois(owner sdk.AccAddress, value string, price string) MsgSetWhois {
-  return MsgSetWhois{
-		Owner: owner,
+// NewMsgSetName is a constructor function for MsgName
+func NewNewMsgSetName(name string, value string, owner sdk.AccAddress) NewMsgSetName {
+  return NewMsgSetName{
+    Name: name,
     Value: value,
-    Price: price,
+    Owner: owner,
 	}
 }
 
-func (msg MsgSetWhois) Route() string {
-  return RouterKey
-}
+//Route should return the name of the module
+func (msg NewMsgSetName) Route() string {return RouterKey}
 
-func (msg MsgSetWhois) Type() string {
-  return "SetWhois"
-}
+//Type should return the action
+func (msg MsgSetName) Type() string { return "set_name"}
 
-func (msg MsgSetWhois) GetSigners() []sdk.AccAddress {
-  return []sdk.AccAddress{sdk.AccAddress(msg.Owner)}
-}
-
-func (msg MsgSetWhois) GetSignBytes() []byte {
-  bz := ModuleCdc.MustMarshalJSON(msg)
-  return sdk.MustSortJSON(bz)
-}
-
-func (msg MsgSetWhois) ValidateBasic() error {
-  if msg.Owner.Empty() {
-    return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, "owner can't be empty")
+//ValidawteBasic runs stateless checks on the message
+func (msg MsgSetName) ValidateBasic() error {
+  if msg.Owner.Empty(){
+    return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, msg.Owner.String())
+  }
+  if len(msg.Name) == 0 || len(msg.Value) == 0{
+    return sdkerrors.Wrap(sdkerrors.ErrUnknownRequest,"Nanme and/or Value cannot be empty")
   }
   return nil
 }
+
+//GetSignBytes encode the message for signing
+func (msg MsgSetName) GetSignBytes() []byte{
+  return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(msg))
+}
+
+// GetSigners defines whose signature is required
+func (msg MsgSetName) GetSigners() []sdk.AccAddress {
+	return []sdk.AccAddress{msg.Owner}
+}
+
